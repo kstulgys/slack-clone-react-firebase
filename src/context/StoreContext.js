@@ -4,6 +4,11 @@ import { useImmerReducer } from "use-immer";
 const StoreContext = createContext();
 export const useStore = () => useContext(StoreContext);
 
+export const store = () => {
+  const [store, dispatch] = useStore();
+  return { store, dispatch };
+};
+
 export default function StoreProvider(props) {
   const initialState = rootReducer(props.initialValue, { type: "__INIT__" });
   const [store, dispatch] = useImmerReducer(rootReducer, initialState);

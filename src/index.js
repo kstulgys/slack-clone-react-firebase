@@ -1,26 +1,28 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import StoreProvider from "./context/StoreContext";
-import { useStore } from "./context/StoreContext";
+import Store from "./store";
+import AuthUserForm from "./components/AuthUserForm";
+import { initialState as count } from "./store/Counter";
+import { initialState as auth } from "./store/Auth";
 import "./styles.css";
 
-function App() {
-  const [store, dispatch] = useStore();
-  const inc = num => () => dispatch({ type: "inc", num });
+const initialState = {
+  count,
+  auth
+};
 
+function App() {
   return (
     <div className="App">
-      <h1>Counter Val {store.counter.value}</h1>
-      <button onClick={inc(2)}>INC</button>
+      <AuthUserForm />
     </div>
   );
 }
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(
-  <StoreProvider>
+  <Store.Provider initialState={initialState}>
     <App />
-  </StoreProvider>,
-
+  </Store.Provider>,
   rootElement
 );
