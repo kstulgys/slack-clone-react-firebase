@@ -1,21 +1,25 @@
 import React, { useMemo, useContext, createContext, useState } from "react";
+import { withRouter } from "react-router-dom";
 import { useImmer } from "use-immer";
 
 function makeStore() {
   const context = createContext();
 
-  const Provider = ({ children, initialState = {} }) => {
+  const Provider = ({ children, initialState = {}, history }) => {
+    // console.log(history);
     const [state, setState] = useImmer(initialState);
-
-    const contextValue = useMemo(() => [state, setState], [state]);
-
+    let contextValue = useMemo(() => [state, setState], [state]);
+    // contextValue.push(history);
+    contextValue = [...contextValue, history];
+    // console.log(contextValue);
     return <context.Provider value={contextValue}>{children}</context.Provider>;
   };
 
   const useStore = () => useContext(context);
+  const ProviderWithRouter = withRouter(Provider);
 
   return {
-    Provider,
+    ProviderWithRouter,
     useStore
   };
 }
