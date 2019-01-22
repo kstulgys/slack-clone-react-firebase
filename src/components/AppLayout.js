@@ -1,13 +1,17 @@
 import React from "react";
 import useAuth from "../store/Auth";
+
 import {
-  Button,
-  Checkbox,
+  Divider,
+  Sidebar,
   Menu,
   Grid,
   Dimmer,
-  Loader
+  Loader,
+  Button,
+  Icon
 } from "semantic-ui-react";
+import SidePanel from "./SidePanel";
 
 export default function AppLayout() {
   const [auth, { logout }] = useAuth();
@@ -20,21 +24,26 @@ export default function AppLayout() {
     );
   return (
     <Grid columns="equal" style={{ background: "#eee", height: "100%" }}>
-      <Grid.Column>
-        <div>Color Panel</div>
-      </Grid.Column>
-
-      <Grid.Column>
-        <Menu
-          size="large"
-          vertical
-          inverted
-          fixed="left"
-          style={{ background: "#4c3c4c" }}
+      <Sidebar
+        as={Menu}
+        icon="labeled"
+        inverted
+        vertical
+        visible
+        width="very thin"
+      >
+        <Divider />
+        <Button
+          icon="add"
+          size="small"
+          color="blue"
+          // onClick={this.openModal}
         />
-      </Grid.Column>
+      </Sidebar>
 
-      <Grid.Column width={8}>
+      <SidePanel />
+
+      <Grid.Column>
         <div>Messages</div>
       </Grid.Column>
 
