@@ -51,13 +51,12 @@ export default function UserPanel() {
               trigger={
                 <span>
                   <Image
-                    src={
-                      "https://api.adorable.io/avatars/285/abott@adorable.png"
-                    }
+                    src={auth.currentUser.photoURL}
                     spaced="right"
                     avatar
                   />
-                  User name
+
+                  {auth.currentUser.displayName}
                 </span>
               }
               options={dropdownOptions}

@@ -9,9 +9,7 @@ function makeStore() {
     // console.log(history);
     const [state, setState] = useImmer(initialState);
     let contextValue = useMemo(() => [state, setState, history], [state]);
-    // contextValue.push(history);
-    // contextValue = [...contextValue, history];
-    // console.log(contextValue);
+
     return <context.Provider value={contextValue}>{children}</context.Provider>;
   };
 

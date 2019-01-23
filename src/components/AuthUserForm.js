@@ -11,6 +11,7 @@ import {
 } from "semantic-ui-react";
 
 export default function AuthUserForm() {
+  const [auth, { login, signin }] = useAuth();
   const [isUser, setIsUser] = useState(false);
   const [input, setInput] = useState({
     username: "",
@@ -18,24 +19,19 @@ export default function AuthUserForm() {
     password: "",
     passwordConfirmation: ""
   });
-  const [auth, { login, signin }] = useAuth();
-
-  const handleSetUser = () => {
-    setIsUser(!isUser);
-  };
-
+  console.log(auth.isLoading);
   const handleChange = e => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
   const handleSubmit = e => {
     e.preventDefault();
-    const { email, password } = input;
+    const { email, password, username } = input;
     if (isUser) {
       login({ email, password });
     }
-    signin({ email, password });
+    signin({ email, password, username });
   };
-  console.log(input);
+
   return (
     <div style={{ background: "#eee", height: "100vh" }}>
       <Grid
@@ -100,34 +96,26 @@ export default function AuthUserForm() {
             )}
             <Button
               disabled={auth.isLoading}
-              loading={auth.isLoading}
+              loading={auth.isloading}
               // className={loading ? "loading" : ""}
               color="violet"
               fluid
               size="large"
-              inverted={!auth.isLoading && true}
+              inverted={!auth.isLoading}
               // onClick={login}
             >
               Submit
             </Button>
           </Form>
           <br />
-          {/*       {errors.length > 0 && (
-          <Message error>
-            <h3>Error</h3>
-           {/* 
-           {this.displayErrors(errors)}
-          </Message>
-           */}
+
           <Button
-            // disabled={loading}
-            // className={loading ? "loading" : ""}
             color="violet"
             fluid
             size="large"
-            onClick={handleSetUser}
+            onClick={() => setIsUser(!isUser)}
           >
-            Already a user?
+            {isUser ? `Don't have an account yet?` : `Already a user?`}
           </Button>
         </Grid.Column>
       </Grid>

@@ -16,7 +16,8 @@ import SidePanel from "./SidePanel";
 export default function AppLayout() {
   const [auth, { logout }] = useAuth();
 
-  if (auth.isLoading)
+  console.log(auth.currentUser);
+  if (auth.isloading || !auth.currentUser)
     return (
       <Dimmer active>
         <Loader size="massive">Loading</Loader>

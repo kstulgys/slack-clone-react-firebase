@@ -6,7 +6,7 @@ import AuthUserForm from "./components/AuthUserForm";
 import AppLayout from "./components/AppLayout";
 import useAuth from "./store/Auth";
 import { firebaseAuth } from "./store/firebase";
-
+import { Dimmer, Loader } from "semantic-ui-react";
 import {
   BrowserRouter,
   Route,
@@ -29,9 +29,12 @@ const initialState = {
 function Root() {
   const [auth, { tryToLoginCurrentUser }] = useAuth();
 
-  useEffect(() => {
-    tryToLoginCurrentUser();
-  }, []);
+  useEffect(
+    () => {
+      tryToLoginCurrentUser();
+    },
+    [auth.currentUser]
+  );
 
   return (
     <div className="App">

@@ -30,6 +30,4 @@ export const provider = new firebase.auth.GoogleAuthProvider();
 
 // messaging.usePublicVapidKey("BHu_3-U19kvS9Wmpb64oDVtuV5eKcDxF6x7dR-GvqwlPoG8wF3SLiOPAusmq5PIzImWjhpHnN8YkoxkRPL2Y5NQ....moL0ewzQ8rZu");
 
-firestore.settings({ timestampsInSnapshots: true });
-
 export default firebase;
