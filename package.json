@@ -5,6 +5,7 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
+    "firebase": "5.8.0",
     "immer": "1.10.5",
     "react": "16.8.0-alpha.1",
     "react-dom": "16.8.0-alpha.1",

@@ -5,6 +5,8 @@ import Store from "./store";
 import AuthUserForm from "./components/AuthUserForm";
 import AppLayout from "./components/AppLayout";
 import useAuth from "./store/Auth";
+import { firebaseAuth } from "./store/firebase";
+
 import {
   BrowserRouter,
   Route,
@@ -12,8 +14,8 @@ import {
   Redirect,
   withRouter
 } from "react-router-dom";
-import CustomBrowserRouter from "./utils/CustomBrowserRouter";
-import { useRouter } from "./utils/CustomBrowserRouter";
+// import CustomBrowserRouter from "./utils/CustomBrowserRouter";
+// import { useRouter } from "./utils/CustomBrowserRouter";
 
 import { initialState as count } from "./store/Counter";
 import { initialState as auth } from "./store/Auth";
@@ -25,10 +27,10 @@ const initialState = {
 };
 
 function Root() {
-  const [auth, { logout, tryToLoginUser }] = useAuth();
+  const [auth, { tryToLoginCurrentUser }] = useAuth();
 
   useEffect(() => {
-    tryToLoginUser();
+    tryToLoginCurrentUser();
   }, []);
 
   return (

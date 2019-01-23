@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import Store from "./index";
+import { firebaseAuth } from "./firebase";
 
-const waait = async (sec = 3000) =>
+const waait = async (sec = 500) =>
   new Promise(resolve => setTimeout(resolve, sec));
 
 export const initialState = {
@@ -12,51 +13,84 @@ export const initialState = {
 export default function useAuth() {
   const [{ auth }, setState, history] = Store.useStore();
 
-  const loginSuccess = () => {
+  const loginCurrentUser = ({ currentUser }) => {
     setState(draft => {
-      draft.auth.currentUser = false;
+      draft.auth.currentUser = currentUser;
       draft.auth.isLoading = false;
     });
     history.push("/");
   };
 
-  const loginFail = () => {
+  const signOutCurrentUser = () => {
     setState(draft => {
-      draft.auth.currentUser = false;
+      draft.auth.currentUser = null;
       draft.auth.isLoading = false;
     });
     history.push("/auth");
   };
 
-  const tryToLoginUser = async () => {
-    const userToken = await localStorage.getItem("token");
-    if (userToken === "valid token") {
-      setState(draft => {
-        draft.auth.isLoading = true;
-      });
-      await waait(3000);
-      loginSuccess();
-    } else {
-      loginFail();
+  const tryToLoginCurrentUser = () => {
+    firebaseAuth.onAuthStateChanged(currentUser => {
+      if (currentUser) {
+        loginCurrentUser({ currentUser });
+      } else {
+        signOutCurrentUser();
+      }
+    });
+  };
+
+  const signin = async ({ email, password }) => {
+    setState(draft => {
+      draft.auth.isLoading = true;
+    });
+    try {
+      const currentUser = await firebaseAuth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      loginCurrentUser({ currentUser });
+    } catch (e) {
+      console.log(e.message);
+      signOutCurrentUser();
     }
   };
 
-  const login = async () => {
-    await localStorage.setItem("token", "valid token");
-    tryToLoginUser();
+  const login = async ({ email, password }) => {
+    setState(draft => {
+      draft.auth.isLoading = true;
+    });
+    try {
+      const currentUser = await firebaseAuth.signInWithEmailAndPassword(
+        email,
+        password
+      );
+      loginCurrentUser({ currentUser });
+    } catch (e) {
+      console.log(e.message);
+      signOutCurrentUser();
+    }
   };
 
   const logout = async () => {
-    await localStorage.removeItem("token");
-    tryToLoginUser();
+    setState(draft => {
+      draft.auth.isLoading = true;
+    });
+    try {
+      await firebaseAuth.signOut();
+      signOutCurrentUser();
+    } catch (e) {
+      console.log(e);
+      signOutCurrentUser();
+    }
   };
 
   return [
     auth,
     {
+      signin,
       login,
       logout,
-      tryToLoginUser
+      tryToLoginCurrentUser
     }
   ];
 }
