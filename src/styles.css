@@ -1,4 +1,18 @@
-.body {
-  height: 100%;
-  width: 100%;
+body {
+  margin: 0;
+  padding: 1em;
+  font-family: "Open Sans", sans-serif;
+  background: rgba(0, 0, 0, 0.05);
+  height: 100vh;
+  background: #eee;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }

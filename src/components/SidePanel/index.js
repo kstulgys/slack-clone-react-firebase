@@ -12,7 +12,7 @@ import {
 import UserPanel from "./UserPanel";
 import useAuth from "../../store/Auth";
 
-// import Channels from "./Channels";
+import Channels from "./Channels";
 // import DirectMessages from "./DirectMessages";
 // import Starred from "./Starred";
 
@@ -36,13 +36,13 @@ export default function SidePanel() {
       inverted
       fixed="left"
       vertical
-      color="violet"
+      color="brown"
       // style={{ background: primaryColor, fontSize: "1.2rem" }}
       // style={{ background: "#4c3e4c" }}
     >
       <UserPanel />
+      <Channels />
       {/*<Starred  />
-        <Channels  />
         <DirectMessages />*/}
     </Menu>
   );

@@ -19,7 +19,7 @@ export default function AuthUserForm() {
     password: "",
     passwordConfirmation: ""
   });
-  console.log(auth.isLoading);
+  // console.log(auth.isLoading);
   const handleChange = e => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -28,8 +28,9 @@ export default function AuthUserForm() {
     const { email, password, username } = input;
     if (isUser) {
       login({ email, password });
+    } else {
+      signin({ email, password, username });
     }
-    signin({ email, password, username });
   };
 
   return (
@@ -42,7 +43,7 @@ export default function AuthUserForm() {
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as="h1" icon color="violet" textAlign="center">
             <Icon name="puzzle piece" color="violet" />
-            Register for DevChat
+            {isUser ? `Login for DevChat` : `Register for DevChat`}
           </Header>
           <Form onSubmit={handleSubmit} size="large">
             {!isUser && (
@@ -96,12 +97,12 @@ export default function AuthUserForm() {
             )}
             <Button
               disabled={auth.isLoading}
-              loading={auth.isloading}
+              loading={auth.isLoading}
               // className={loading ? "loading" : ""}
               color="violet"
               fluid
               size="large"
-              inverted={!auth.isLoading}
+
               // onClick={login}
             >
               Submit
@@ -109,14 +110,15 @@ export default function AuthUserForm() {
           </Form>
           <br />
 
-          <Button
+          <Header
+            as="a"
+            href="#"
             color="violet"
-            fluid
-            size="large"
+            size="small"
             onClick={() => setIsUser(!isUser)}
           >
             {isUser ? `Don't have an account yet?` : `Already a user?`}
-          </Button>
+          </Header>
         </Grid.Column>
       </Grid>
     </div>

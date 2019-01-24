@@ -13,11 +13,12 @@ export const initialState = {
 export default function useAuth() {
   const [{ auth }, setState, history] = Store.useStore();
 
-  const loginCreatedUser = ({ createdUser }) => {
+  const loginCreatedUser = ({ user }) => {
     setState(draft => {
-      draft.auth.currentUser = createdUser;
+      draft.auth.currentUser = user;
       draft.auth.isLoading = false;
     });
+    history.push("/");
   };
 
   const signOutCurrentUser = () => {
@@ -29,9 +30,9 @@ export default function useAuth() {
   };
 
   const tryToLoginCurrentUser = () => {
-    firebaseAuth.onAuthStateChanged(createdUser => {
-      if (createdUser) {
-        loginCreatedUser({ createdUser });
+    firebaseAuth.onAuthStateChanged(user => {
+      if (user) {
+        loginCreatedUser({ user });
       } else {
         signOutCurrentUser();
       }
@@ -47,38 +48,34 @@ export default function useAuth() {
         email,
         password
       );
-      const updatedUserProfile = await createdUser.user.updateProfile({
+      const updateUserProfile = await createdUser.user.updateProfile({
         displayName: username,
         photoURL: `http://gravatar.com/avatar/${md5(
           createdUser.user.email
         )}?d=identicon`
       });
-      const saveUserToFirestore = await createUserDocument(createdUser.user);
-      console.log("user saved");
-      // const saveUserToState = loginCreatedUser({ createdUser });
-      setState(draft => {
-        draft.auth.currentUser = createdUser;
-        draft.auth.isLoading = false;
-      });
+      const user = await createUserDocument(createdUser.user);
+      console.log("user saved", user);
+      await loginCreatedUser({ user });
+      console.log("user saved to state");
       history.push("/");
     } catch (e) {
-      console.log(e.message);
+      console.log("e.message from signin", e.message);
       signOutCurrentUser();
     }
   };
 
   const login = async ({ email, password }) => {
-    setState(draft => {
-      draft.auth.isLoading = true;
-    });
     try {
+      setState(draft => {
+        draft.auth.isLoading = true;
+      });
       const currentUser = await firebaseAuth.signInWithEmailAndPassword(
         email,
         password
       );
-      loginCreatedUser({ currentUser });
     } catch (e) {
-      console.log(e.message);
+      console.log("e.message from login", e.message);
       signOutCurrentUser();
     }
   };
@@ -89,9 +86,8 @@ export default function useAuth() {
     });
     try {
       await firebaseAuth.signOut();
-      signOutCurrentUser();
     } catch (e) {
-      console.log(e);
+      console.log("e.message from signin", e.message);
       signOutCurrentUser();
     }
   };

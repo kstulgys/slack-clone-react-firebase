@@ -17,24 +17,21 @@ import {
 // import CustomBrowserRouter from "./utils/CustomBrowserRouter";
 // import { useRouter } from "./utils/CustomBrowserRouter";
 
-import { initialState as count } from "./store/Counter";
+import { initialState as channel } from "./store/Channel";
 import { initialState as auth } from "./store/Auth";
 import "./styles.css";
 
 const initialState = {
-  count,
+  channel,
   auth
 };
 
 function Root() {
   const [auth, { tryToLoginCurrentUser }] = useAuth();
 
-  useEffect(
-    () => {
-      tryToLoginCurrentUser();
-    },
-    [auth.currentUser]
-  );
+  useEffect(() => {
+    tryToLoginCurrentUser();
+  }, []);
 
   return (
     <div className="App">

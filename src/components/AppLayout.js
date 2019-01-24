@@ -12,11 +12,13 @@ import {
   Icon
 } from "semantic-ui-react";
 import SidePanel from "./SidePanel";
+import Messages from "./Messages";
+import ColorPanel from "./ColorPanel";
 
 export default function AppLayout() {
   const [auth, { logout }] = useAuth();
 
-  console.log(auth.currentUser);
+  // console.log(auth.currentUser);
   if (auth.isloading || !auth.currentUser)
     return (
       <Dimmer active>
@@ -25,27 +27,12 @@ export default function AppLayout() {
     );
   return (
     <Grid columns="equal" style={{ background: "#eee", height: "100%" }}>
-      <Sidebar
-        as={Menu}
-        icon="labeled"
-        inverted
-        vertical
-        visible
-        width="very thin"
-      >
-        <Divider />
-        <Button
-          icon="add"
-          size="small"
-          color="blue"
-          // onClick={this.openModal}
-        />
-      </Sidebar>
+      <ColorPanel />
 
       <SidePanel />
 
-      <Grid.Column>
-        <div>Messages</div>
+      <Grid.Column style={{ marginLeft: 320 }}>
+        <Messages />
       </Grid.Column>
 
       <Grid.Column width={4}>
