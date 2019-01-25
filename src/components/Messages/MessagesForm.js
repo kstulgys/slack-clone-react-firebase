@@ -1,24 +1,48 @@
-import React, { useState } from "react";
-import { Button, Segment, Input, Icon } from "semantic-ui-react";
-import useMessage from "../../store/Message";
+import React, { useState, useEffect } from 'react';
+import { Button, Segment, Input, Icon, Label } from 'semantic-ui-react';
+import FileModal from './FileModal';
+import useMessage from '../../store/Message';
+import useChannel from '../../store/Channel';
 
 export default function MessagesForm() {
-  const { sendMessage } = useMessage();
-  const [message, setMessage] = useState("");
-  // console.log(message);
-  // console.log(typeof message);
+  const [message, { sendMessage, subscribeToNewMessages }] = useMessage();
+  const [
+    channel,
+    { createChannel, subscribeToChannels, changeChannel }
+  ] = useChannel();
+  const [content, setMessage] = useState('');
+
+  const handleKeyDown = event => {
+    if (event.keyCode === 13) {
+      sendMessage(content);
+      setMessage('');
+    }
+
+    // const { message, typingRef, channel, user } = this.state;
+
+    // if (message) {
+    //   typingRef
+    //     .child(channel.id)
+    //     .child(user.uid)
+    //     .set(user.displayName);
+    // } else {
+    //   typingRef
+    //     .child(channel.id)
+    //     .child(user.uid)
+    //     .remove();
+    // }
+  };
 
   return (
     <Segment
       style={{
-        position: "fixed ",
-        bottom: "1em",
-        marginLeft: "320px ",
+        position: 'fixed ',
+        bottom: '1em',
+        marginLeft: '320px ',
         left: 0,
-        right: "1em",
+        right: '1em',
         zIndex: 200
-      }}
-    >
+      }}>
       {
         // {emojiPicker && (
         //   <Picker
@@ -30,46 +54,25 @@ export default function MessagesForm() {
         //   />
         // )}
       }
-
       <Input
         fluid
         name="message"
         onChange={e => setMessage(e.target.value)}
-        // onKeyDown={this.handleKeyDown}
-        // value={message}
-        // ref={node => (this.messageInputRef = node)}
-        // style={{ marginBottom: "0.7em" }}
-        label={
-          <Button
-            icon={"add"}
-            content={null}
-            // onClick={this.handleTogglePicker}
-          />
-        }
+        onKeyDown={handleKeyDown}
+        value={content}
         labelPosition="left"
+        placeholder="Write your message"
+        type="text"
         // className={
         //   errors.some(error => error.message.includes("message")) ? "error" : ""
         // }
-        placeholder="Write your message"
-      />
-      <Button.Group icon widths="2">
-        <Button
-          onClick={() => sendMessage({ message })}
-          // disabled={loading}
-          color="orange"
-          content="Add Reply"
-          labelPosition="left"
-          icon="edit"
-        />
-        <Button
-          color="teal"
-          // disabled={uploadState === "uploading"}
-          // onClick={this.openModal}
-          content="Upload Media"
-          labelPosition="right"
-          icon="cloud upload"
-        />
-      </Button.Group>
+      >
+        <Label icon={'add'} />
+
+        <input />
+        <FileModal />
+      </Input>
+
       {
         // <FileModal
         //   modal={modal}

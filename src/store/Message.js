@@ -1,55 +1,87 @@
-import Store from "./index";
-import { firebaseAuth, firestore } from "./firebase";
-import md5 from "md5";
+import Store from './index';
+import { firebaseAuth, firestore, storage } from './firebase';
+import md5 from 'md5';
+import uuidv4 from 'uuid/v4';
+import isUrl from 'is-url';
 
-// export const initialState = {
-//   currentChannel: null,
-//   isPrivateChannel: false,
-//   userPosts: null,
-//   channels: []
-// };
+export const initialState = {
+  messages: [],
+  percentUploaded: 0,
+  uploadingFile: false
+};
 
 export default function useMessage() {
-  const [{ auth, channel }, setState, history] = Store.useStore();
+  const [{ auth, channel, message }, setState, history] = Store.useStore();
 
-  const sendMessage = async ({ message }) => {
+  const sendMessage = content => {
+    const messagesRef = firestore.collection(
+      `messages/${channel.currentChannel.id}/messages`
+    );
     const newMessage = {
-      message,
+      content,
+      createdAt: new Date(),
       user: {
         id: auth.currentUser.uid,
         name: auth.currentUser.displayName,
         photoURL: auth.currentUser.photoURL
       }
     };
-    // firestore.doc(`messages/${channel.currentChannel.id}`).merge(newMessage);
 
     try {
-      // firestore
-      //   .collection("messages")
-      //   .doc(`${channel.currentChannel.id}`)
-      //   .add(newMessage);
-
-      firestore
-        .collection("messages")
-        .doc(`${channel.currentChannel.id}`)
-        .add(newMessage);
-
-      //             .collection("messages")
-      // .doc(`${channel.currentChannel.id}`)
-      // .collection(`${channel.currentChannel.id}`)
-      // .add(newMessage);
-      // firestore
-      //   .collection(`messages/${channel.currentChannel.id}`)
-      //   .set(newMessage);
-      // const messagerRef = firestore.doc(
-      //   `messages/${channel.currentChannel.id}`
-      // );
-      // await messagerRef.set(newMessage);
-      console.error("new message has been sent");
+      messagesRef.add(newMessage);
+      console.error('new message has been sent');
     } catch (e) {
-      console.error("Error creating message", e.message);
+      console.error('Error creating message', e.message);
     }
   };
 
-  return { sendMessage };
+  const subscribeToNewMessages = () => {
+    if (channel.currentChannel) {
+      firestore
+        .collection('messages')
+        .doc(`${channel.currentChannel.id}`)
+        .collection('messages')
+        .orderBy('createdAt', 'asc')
+        .onSnapshot(snapshot => {
+          const messages = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          // console.log(messages);
+          setState(draft => {
+            draft.message.messages = messages;
+          });
+        });
+    }
+  };
+
+  const uploadFile = (file, metadata) => {
+    const filePath = `chat/public/${uuidv4()}.jpg`;
+    const uploadTask = storage
+      .ref()
+      .child(filePath)
+      .put(file, metadata);
+
+    uploadTask.on('state_changed', snap => {
+      const percentUploaded = Math.round(
+        (snap.bytesTransferred / snap.totalBytes) * 100
+      );
+      setState(draft => {
+        draft.message.uploadingFile = true;
+        draft.message.percentUploaded = percentUploaded;
+      });
+    });
+
+    uploadTask
+      .then(response => response.ref.getDownloadURL())
+      .then(content => {
+        sendMessage(content);
+        setState(draft => {
+          draft.message.uploadingFile = false;
+          draft.message.percentUploaded = 0;
+        });
+      });
+  };
+
+  return [message, { sendMessage, subscribeToNewMessages, uploadFile }];
 }

@@ -19,16 +19,20 @@ import {
 
 import { initialState as channel } from "./store/Channel";
 import { initialState as auth } from "./store/Auth";
+import { initialState as message } from "./store/Message";
+
 import "./styles.css";
 
 const initialState = {
   channel,
-  auth
+  auth,
+  message
 };
 
 function Root() {
   const [auth, { tryToLoginCurrentUser }] = useAuth();
-
+  const [{ channel, message }, setState, history] = Store.useStore();
+  // console.log({ ...channel, ...message, ...auth });
   useEffect(() => {
     tryToLoginCurrentUser();
   }, []);

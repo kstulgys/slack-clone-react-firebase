@@ -7,7 +7,12 @@ export default function Chanels() {
   const [auth, { logout }] = useAuth();
   const [
     channel,
-    { createChannel, subscribeToChannels, changeChannel }
+    {
+      createChannel,
+      subscribeToChannels,
+      changeChannel,
+      subscribeToNewMessages
+    }
   ] = useChannel();
   const [modal, setModal] = useState(false);
   const [channelInfo, setChannelInfo] = useState({
@@ -17,7 +22,7 @@ export default function Chanels() {
 
   const [activeChannel, setActiveChannel] = useState({});
 
-  console.log(channel);
+  // console.log(channel);
   // console.log(channel.currentChannel && channel.currentChannel.id);
 
   const handleChanelInfo = e => {
@@ -27,12 +32,11 @@ export default function Chanels() {
   const handleSubmit = e => {
     e.preventDefault();
     createChannel({ ...channelInfo });
+    setModal(modal => !modal);
   };
 
   useEffect(() => {
     subscribeToChannels();
-    return () => subscribeToChannels();
-    // setActiveChannel(channel.channels[0]);
   }, []);
 
   // console.log(channeInfo);

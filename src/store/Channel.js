@@ -43,6 +43,7 @@ export default function useChannel() {
 
   const subscribeToChannels = () => {
     firestore.collection("channels").onSnapshot(snapshot => {
+      // console.log(snapshot.docs);
       const channels = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -51,7 +52,6 @@ export default function useChannel() {
         draft.channel.channels = channels;
         draft.channel.currentChannel = channels[0];
       });
-      // console.log(channel.currentChannel);
     });
   };
 
@@ -60,12 +60,6 @@ export default function useChannel() {
       draft.channel.currentChannel = channel;
     });
   };
-
-  // const setFirstChannelOnMount = channel => {
-  //   setState(draft => {
-  //     draft.channel.firstChannel = channel;
-  //   });
-  // };
 
   return [
     channel,
