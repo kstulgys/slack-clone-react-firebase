@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dropdown,
   Header,
@@ -8,12 +8,12 @@ import {
   Loader,
   Image,
   Segment
-} from "semantic-ui-react";
-import UserPanel from "./UserPanel";
-import useAuth from "../../store/Auth";
+} from 'semantic-ui-react';
+import UserPanel from './UserPanel';
+import useAuth from '../../store/Auth';
 
-import Channels from "./Channels";
-// import DirectMessages from "./DirectMessages";
+import Channels from './Channels';
+import DirectMessages from './DirectMessages';
 // import Starred from "./Starred";
 
 export default function SidePanel() {
@@ -42,8 +42,9 @@ export default function SidePanel() {
     >
       <UserPanel />
       <Channels />
-      {/*<Starred  />
-        <DirectMessages />*/}
+      <DirectMessages />
+
+      {/*<Starred  />*/}
     </Menu>
   );
 }

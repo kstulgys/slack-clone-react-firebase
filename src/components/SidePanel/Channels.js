@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Icon, Menu, Modal, Form, Button, Input } from "semantic-ui-react";
-import useAuth from "../../store/Auth";
-import useChannel from "../../store/Channel";
+import React, { useState, useEffect } from 'react';
+import { Icon, Menu, Modal, Form, Button, Input } from 'semantic-ui-react';
+import useAuth from '../../store/Auth';
+import useChannel from '../../store/Channel';
 
 export default function Chanels() {
   const [auth, { logout }] = useAuth();
@@ -16,8 +16,8 @@ export default function Chanels() {
   ] = useChannel();
   const [modal, setModal] = useState(false);
   const [channelInfo, setChannelInfo] = useState({
-    channelName: "",
-    channelDetails: ""
+    channelName: '',
+    channelDetails: ''
   });
 
   const [activeChannel, setActiveChannel] = useState({});
@@ -48,9 +48,7 @@ export default function Chanels() {
         onClick={() => changeChannel(chn)}
         name={chn.channelName}
         style={{ opacity: 0.7 }}
-        active={chn.id === channel.currentChannel.id}
-        // active={true}
-      >
+        active={chn.id === channel.currentChannel.id}>
         {
           // {this.getNotificationCount(channel) && (
           //   <Label color="red">{this.getNotificationCount(channel)}</Label>
@@ -62,12 +60,12 @@ export default function Chanels() {
 
   return (
     <>
-      <Menu.Menu className="menu">
+      <Menu.Menu style={{ paddingBottom: '2em' }}>
         <Menu.Item>
           <span>
             <Icon name="exchange" /> CHANNELS
-          </span>{" "}
-          ({channel.channels.length}){" "}
+          </span>{' '}
+          ({channel.channels.length}){' '}
           <Icon name="add" onClick={() => setModal(modal => !modal)} />
         </Menu.Item>
         {displayChannels(channel.channels)}
@@ -105,8 +103,7 @@ export default function Chanels() {
           <Button
             color="red"
             inverted
-            onClick={() => setModal(modal => !modal)}
-          >
+            onClick={() => setModal(modal => !modal)}>
             <Icon name="remove" /> Cancel
           </Button>
         </Modal.Actions>

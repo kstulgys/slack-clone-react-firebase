@@ -1,32 +1,38 @@
-import Store from "./index";
-import { firebaseAuth, firestore } from "./firebase";
-import md5 from "md5";
+import Store from './index';
+import useOnlineStatus from '@rehooks/online-status';
+import { firebaseAuth, firestore } from './firebase';
+import md5 from 'md5';
 
 // const waait = async (sec = 500) =>
 //   new Promise(resolve => setTimeout(resolve, sec));
 
 export const initialState = {
   currentUser: null,
-  isLoading: true
+  isLoading: true,
+  onlineStatus: false
 };
 
 export default function useAuth() {
   const [{ auth }, setState, history] = Store.useStore();
-
+  // const onlineStatus = useOnlineStatus()
   const loginCreatedUser = ({ user }) => {
+    updateUserStatus(user.uid, true);
     setState(draft => {
       draft.auth.currentUser = user;
       draft.auth.isLoading = false;
     });
-    history.push("/");
+    history.push('/');
   };
 
   const signOutCurrentUser = () => {
+    if (auth.currentUser) {
+      updateUserStatus(auth.currentUser.uid, false);
+    }
     setState(draft => {
       draft.auth.currentUser = null;
       draft.auth.isLoading = false;
     });
-    history.push("/auth");
+    history.push('/auth');
   };
 
   const tryToLoginCurrentUser = () => {
@@ -55,12 +61,9 @@ export default function useAuth() {
         )}?d=identicon`
       });
       const user = await createUserDocument(createdUser.user);
-      console.log("user saved", user);
-      await loginCreatedUser({ user });
-      console.log("user saved to state");
-      history.push("/");
+      console.log('user saved', user);
     } catch (e) {
-      console.log("e.message from signin", e.message);
+      console.log('e.message from signin', e.message);
       signOutCurrentUser();
     }
   };
@@ -75,41 +78,45 @@ export default function useAuth() {
         password
       );
     } catch (e) {
-      console.log("e.message from login", e.message);
-      signOutCurrentUser();
+      console.log('e.message from login', e.message);
+      // signOutCurrentUser();
     }
   };
 
-  const logout = async () => {
+  const logout = () => {
     setState(draft => {
       draft.auth.isLoading = true;
     });
     try {
-      await firebaseAuth.signOut();
+      firebaseAuth.signOut();
     } catch (e) {
-      console.log("e.message from signin", e.message);
-      signOutCurrentUser();
+      console.log('e.message from signin', e.message);
+      // signOutCurrentUser();
+    }
+  };
+
+  const updateUserStatus = async (userId, trueOrFalse) => {
+    // console.log(userId);
+    try {
+      const userRef = await firestore.doc(`users/${userId}`);
+      await userRef.update({ isOnline: trueOrFalse });
+    } catch (e) {
+      // console.log('e.message from updateUserStatus', e.message);
+      return null;
     }
   };
 
   const createUserDocument = async (user, additionalData) => {
-    // If there is no user, let's not do this.
     if (!user) return;
-
-    // Get a reference to the location in the Firestore where the user
-    // document may or may not exist.
     const userRef = firestore.doc(`users/${user.uid}`);
-
-    // Go and fetch a document from that location.
     const snapshot = await userRef.get();
 
-    // If there isn't a document for that user. Let's use information
-    // that we got from either Google or our sign up form.
     if (!snapshot.exists) {
       const { displayName, email, photoURL } = user;
       const createdAt = new Date();
       try {
         await userRef.set({
+          isOnline: true,
           displayName,
           email,
           photoURL,
@@ -117,26 +124,26 @@ export default function useAuth() {
           ...additionalData
         });
       } catch (error) {
-        console.error("Error creating user", console.error);
+        console.error('Error creating user', console.error);
       }
     }
 
-    // Get the document and return it, since that's what we're
-    // likely to want to do next.
     return getUserDocument(user.uid);
   };
 
   const getUserDocument = async uid => {
     if (!uid) return null;
+
     try {
-      const userDocument = await firestore
-        .collection("users")
-        .doc(uid)
-        .get();
+      const userDocument = await firestore.doc(`users/${uid}`).get();
+      // const userDocument = await firestore
+      //   .collection('users')
+      //   .doc(uid)
+      //   .get();
 
       return { uid, ...userDocument.data() };
     } catch (error) {
-      console.error("Error fetching user", error.message);
+      console.error('Error fetching user', error.message);
     }
   };
 
@@ -146,7 +153,8 @@ export default function useAuth() {
       signin,
       login,
       logout,
-      tryToLoginCurrentUser
+      tryToLoginCurrentUser,
+      updateUserStatus
     }
   ];
 }

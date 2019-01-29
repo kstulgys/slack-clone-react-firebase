@@ -1,38 +1,49 @@
-import React from "react";
-import { Header, Segment, Input, Icon } from "semantic-ui-react";
+import React, { useState, useEffect } from 'react';
+import { Header, Segment, Input, Icon } from 'semantic-ui-react';
+import useChannel from '../../store/Channel';
+import useMessage from '../../store/Message';
 
 export default function MessagesHeader() {
-  // render() {
-  // const {
-  //   channelName,
-  //   numUniqueUsers,
-  //   handleSearchChange,
-  //   searchLoading,
-  //   isPrivateChannel,
-  //   handleStar,
-  //   isChannelStarred
-  // } = this.props;
+  const [channel] = useChannel();
+  const [message, { setSearchResults }] = useMessage();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchLoader, setSearchLoader] = useState(false);
+
+  const handleSearchLoader = () => {
+    setSearchLoader(true);
+    setTimeout(() => {
+      setSearchLoader(false);
+    }, 1000);
+  };
+
+  useEffect(
+    () => {
+      setSearchResults(searchTerm);
+      handleSearchLoader();
+    },
+    [searchTerm]
+  );
 
   return (
     <Segment clearing>
       {/* Channel Title */}
       <Header fluid="true" as="h2" floated="left" style={{ marginBottom: 0 }}>
         <span>
-          Awesome channel
+          # {channel.currentChannel && channel.currentChannel.channelName}
           <Icon
             // onClick={handleStar}
-            name={"star"}
-            color={"yellow"}
+            name="star"
+            color="yellow"
           />
         </span>
-        <Header.Subheader>16 users</Header.Subheader>
+        <Header.Subheader>{message.uniqueUsers}</Header.Subheader>
       </Header>
 
       {/* Channel Search Input */}
       <Header floated="right">
         <Input
-          // loading={searchLoading}
-          // onChange={handleSearchChange}
+          loading={searchLoader}
+          onChange={e => setSearchTerm(e.target.value)}
           size="mini"
           icon="search"
           name="searchTerm"

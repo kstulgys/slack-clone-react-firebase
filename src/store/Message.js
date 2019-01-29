@@ -7,7 +7,10 @@ import isUrl from 'is-url';
 export const initialState = {
   messages: [],
   percentUploaded: 0,
-  uploadingFile: false
+  uploadingFile: false,
+  uniqueUsers: 0,
+  searchResults: [],
+  users: []
 };
 
 export default function useMessage() {
@@ -48,11 +51,27 @@ export default function useMessage() {
             ...doc.data()
           }));
           // console.log(messages);
+          // const uniqueUsers = getUniqueUsers(messages);
           setState(draft => {
             draft.message.messages = messages;
+            draft.message.uniqueUsers = getUniqueUsers(messages);
           });
         });
     }
+  };
+
+  const subscribeToUsers = () => {
+    firestore.collection('users').onSnapshot(snapshot => {
+      const users = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      // console.log(messages);
+      // const uniqueUsers = getUniqueUsers(messages);
+      setState(draft => {
+        draft.message.users = users;
+      });
+    });
   };
 
   const uploadFile = (file, metadata) => {
@@ -83,5 +102,47 @@ export default function useMessage() {
       });
   };
 
-  return [message, { sendMessage, subscribeToNewMessages, uploadFile }];
+  const getUniqueUsers = messages => {
+    // console.log('messages from ubnique', messages);
+    const res = messages.reduce((acc, message) => {
+      // console.log('message from ubnique', message);
+
+      if (!acc.includes(message.user.name)) {
+        acc.push(message.user.name);
+      }
+      return acc;
+    }, []);
+    return `${res.length} ${res.length > 1 ? 'users' : 'user'}`;
+  };
+
+  const setSearchResults = searchTerm => {
+    // console.log(searchTerm);
+    if (searchTerm === '') {
+      setState(draft => {
+        draft.message.searchResults = [];
+      });
+    } else {
+      const regexp = new RegExp(searchTerm, 'gi');
+      const res = message.messages.reduce((acc, message) => {
+        if (message.content.match(regexp) || message.user.name.match(regexp)) {
+          acc.push(message);
+        }
+        return acc;
+      }, []);
+      setState(draft => {
+        draft.message.searchResults = res;
+      });
+    }
+  };
+
+  return [
+    message,
+    {
+      sendMessage,
+      subscribeToNewMessages,
+      uploadFile,
+      setSearchResults,
+      subscribeToUsers
+    }
+  ];
 }

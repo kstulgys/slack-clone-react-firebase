@@ -20,7 +20,7 @@ export default function Message(props) {
   return (
     <Comment>
       <Comment.Avatar src={props.user.photoURL} />
-      <Comment.Content style={isOwnMessage}>
+      <Comment.Content style={{ isOwnMessage }}>
         <Comment.Author as="a">{props.user.name}</Comment.Author>
         <Comment.Metadata>
           {distanceInWordsToNow(props.message.createdAt.toDate())} ago

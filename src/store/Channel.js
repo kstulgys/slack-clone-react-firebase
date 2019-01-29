@@ -1,6 +1,6 @@
-import Store from "./index";
-import { firebaseAuth, firestore } from "./firebase";
-import md5 from "md5";
+import Store from './index';
+import { firebaseAuth, firestore } from './firebase';
+import md5 from 'md5';
 
 // const waait = async (sec = 500) =>
 //   new Promise(resolve => setTimeout(resolve, sec));
@@ -15,8 +15,18 @@ export const initialState = {
 export default function useChannel() {
   const [{ auth, channel }, setState, history] = Store.useStore();
 
-  const createChannel = async ({ channelName, channelDetails }) => {
-    const newChannel = {
+  const createChannel = async ({
+    channelName,
+    channelDetails = '',
+    isPrivate = false
+  }) => {
+    if (isPrivate) {
+      setState(draft => {
+        draft.channel.isPrivateChannel = true;
+      });
+    }
+
+    const publicChannel = {
       channelName,
       channelDetails,
       createdBy: {
@@ -24,25 +34,35 @@ export default function useChannel() {
         avatar: auth.currentUser.photoURL
       }
     };
+    const privateChannel = {
+      channelName
+    };
+
+    const newChannel = isPrivate ? privateChannel : publicChannel;
+    const channelRef = isPrivate
+      ? firestore.collection('privateChannels')
+      : firestore.collection('channels');
+
     try {
-      const docRef = await firestore.collection("channels").add(newChannel);
-      console.log("new channel added");
+      const docRef = await channelRef.add(newChannel);
+      console.log('new channel added');
+      const channel = await docRef.get().then(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      changeChannel(channel);
+      // console.log(channel);
     } catch (e) {
-      console.log("e.message from channel", e.message);
+      console.log('e.message from channel', e.message);
     }
-    // const doc = await docRef.get();
-
-    // const newPost = {
-    //   id: doc.id,
-    //   ...doc.data()
-    // };
-
-    // const { posts } = this.state;
-    // this.setState({ posts: [newPost, ...posts] });
   };
 
-  const subscribeToChannels = () => {
-    firestore.collection("channels").onSnapshot(snapshot => {
+  const subscribeToChannels = isPrivate => {
+    const channelRef = isPrivate
+      ? firestore.collection('privateChannels')
+      : firestore.collection('channels');
+
+    firestore.collection('channels').onSnapshot(snapshot => {
       // console.log(snapshot.docs);
       const channels = snapshot.docs.map(doc => ({
         id: doc.id,
