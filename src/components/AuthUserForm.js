@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import useAuth from "../store/Auth";
+import React, { useState } from 'react';
+import useAuth from '../store/Auth';
 import {
   Button,
   Message,
@@ -8,16 +8,16 @@ import {
   Header,
   Icon,
   Segment
-} from "semantic-ui-react";
+} from 'semantic-ui-react';
 
 export default function AuthUserForm() {
   const [auth, { login, signin }] = useAuth();
   const [isUser, setIsUser] = useState(false);
   const [input, setInput] = useState({
-    username: "",
-    email: "",
-    password: "",
-    passwordConfirmation: ""
+    username: '',
+    email: '',
+    password: '',
+    passwordConfirmation: ''
   });
   // console.log(auth.isLoading);
   const handleChange = e => {
@@ -34,12 +34,11 @@ export default function AuthUserForm() {
   };
 
   return (
-    <div style={{ background: "#eee", height: "100vh" }}>
+    <div style={{ background: '#eee', height: '100vh' }}>
       <Grid
         textAlign="center"
         verticalAlign="middle"
-        style={{ height: "80vh" }}
-      >
+        style={{ height: '80vh' }}>
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as="h1" icon color="violet" textAlign="center">
             <Icon name="puzzle piece" color="violet" />
@@ -112,13 +111,11 @@ export default function AuthUserForm() {
 
           <Header
             as="a"
-            href="#"
             color="violet"
             size="small"
             onClick={() => setIsUser(!isUser)}
-          >
-            {isUser ? `Don't have an account yet?` : `Already a user?`}
-          </Header>
+            content={isUser ? `Don't have an account yet?` : `Already a user?`}
+          />
         </Grid.Column>
       </Grid>
     </div>

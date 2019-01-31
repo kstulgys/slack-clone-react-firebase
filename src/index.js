@@ -5,15 +5,16 @@ import Store from './store';
 import AuthUserForm from './components/AuthUserForm';
 import AppLayout from './components/AppLayout';
 import useAuth from './store/Auth';
-import { firebaseAuth } from './store/firebase';
 import { Dimmer, Loader } from 'semantic-ui-react';
 import {
+  withRouter,
   BrowserRouter,
-  Route,
   Switch,
-  Redirect,
-  withRouter
+  Route,
+  Redirect
 } from 'react-router-dom';
+
+// import { firebaseAuth } from './store/firebase';
 // import CustomBrowserRouter from "./utils/CustomBrowserRouter";
 // import { useRouter } from "./utils/CustomBrowserRouter";
 
@@ -30,18 +31,18 @@ const initialState = {
 };
 
 function Root() {
-  const [auth, { tryToLoginCurrentUser, updateUserStatus }] = useAuth();
-  const [{ channel, message }, setState, history] = Store.useStore();
-  // console.log({ ...channel, ...message, ...auth });
+  const [auth, { tryToLoginCurrentUser }] = useAuth();
+
   useEffect(() => {
     tryToLoginCurrentUser();
+    return tryToLoginCurrentUser();
   }, []);
 
   return (
     <div className="App">
       <Switch>
-        <Route exact path="/" component={AppLayout} />
         <Route exact path="/auth" component={AuthUserForm} />
+        <Route exact path="/" component={AppLayout} />
         <Route path="*" component={() => <Redirect to="/" />} />
       </Switch>
     </div>
@@ -63,3 +64,12 @@ ReactDOM.render(
 //     <Root />
 //   </Store.Provider>
 // </CustomBrowserRouter> ,
+
+// <div className="App">
+//   <AuthUserForm />
+//   <Switch>
+//     <Route exact path="/" component={AppLayout} />
+//     <Route path="*" component={() => <Redirect to="/" />} />
+//   </Switch>
+// </div>
+// <Route exact path="/auth" component={AuthUserForm} />

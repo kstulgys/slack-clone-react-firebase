@@ -1,10 +1,7 @@
+import React, { useEffect } from 'react';
 import Store from './index';
-import useOnlineStatus from '@rehooks/online-status';
 import { firebaseAuth, firestore } from './firebase';
 import md5 from 'md5';
-
-// const waait = async (sec = 500) =>
-//   new Promise(resolve => setTimeout(resolve, sec));
 
 export const initialState = {
   currentUser: null,
@@ -14,9 +11,19 @@ export const initialState = {
 
 export default function useAuth() {
   const [{ auth }, setState, history] = Store.useStore();
-  // const onlineStatus = useOnlineStatus()
-  const loginCreatedUser = ({ user }) => {
-    updateUserStatus(user.uid, true);
+
+  const tryToLoginCurrentUser = () => {
+    firebaseAuth.onAuthStateChanged(async user => {
+      if (user) {
+        await loginUser(user);
+      } else {
+        await signOutUser();
+      }
+    });
+  };
+
+  const loginUser = user => {
+    changeOnlineStatus(user.uid, true);
     setState(draft => {
       draft.auth.currentUser = user;
       draft.auth.isLoading = false;
@@ -24,9 +31,9 @@ export default function useAuth() {
     history.push('/');
   };
 
-  const signOutCurrentUser = () => {
+  const signOutUser = () => {
     if (auth.currentUser) {
-      updateUserStatus(auth.currentUser.uid, false);
+      changeOnlineStatus(auth.currentUser.uid, false);
     }
     setState(draft => {
       draft.auth.currentUser = null;
@@ -35,36 +42,22 @@ export default function useAuth() {
     history.push('/auth');
   };
 
-  const tryToLoginCurrentUser = () => {
-    firebaseAuth.onAuthStateChanged(user => {
-      if (user) {
-        loginCreatedUser({ user });
-      } else {
-        signOutCurrentUser();
-      }
-    });
-  };
-
   const signin = async ({ email, password, username }) => {
     try {
       setState(draft => {
         draft.auth.isLoading = true;
       });
-      const createdUser = await firebaseAuth.createUserWithEmailAndPassword(
+      const { user } = await firebaseAuth.createUserWithEmailAndPassword(
         email,
         password
       );
-      const updateUserProfile = await createdUser.user.updateProfile({
+      await user.updateProfile({
         displayName: username,
-        photoURL: `http://gravatar.com/avatar/${md5(
-          createdUser.user.email
-        )}?d=identicon`
+        photoURL: `http://gravatar.com/avatar/${md5(user.email)}?d=identicon`
       });
-      const user = await createUserDocument(createdUser.user);
-      console.log('user saved', user);
+      await createUserDocument(user);
     } catch (e) {
-      console.log('e.message from signin', e.message);
-      signOutCurrentUser();
+      console.error('e.message from signin', e.message);
     }
   };
 
@@ -73,36 +66,30 @@ export default function useAuth() {
       setState(draft => {
         draft.auth.isLoading = true;
       });
-      const currentUser = await firebaseAuth.signInWithEmailAndPassword(
-        email,
-        password
-      );
+      await firebaseAuth.signInWithEmailAndPassword(email, password);
     } catch (e) {
-      console.log('e.message from login', e.message);
-      // signOutCurrentUser();
+      console.error('e.message from login', e.message);
     }
   };
 
   const logout = () => {
-    setState(draft => {
-      draft.auth.isLoading = true;
-    });
+    // setState(draft => {
+    //   draft.auth.isLoading = true;
+    // });
     try {
       firebaseAuth.signOut();
     } catch (e) {
-      console.log('e.message from signin', e.message);
-      // signOutCurrentUser();
+      console.error('e.message from signin', e.message);
     }
   };
 
-  const updateUserStatus = async (userId, trueOrFalse) => {
-    // console.log(userId);
+  const changeOnlineStatus = async (userId, trueOrFalse) => {
     try {
       const userRef = await firestore.doc(`users/${userId}`);
       await userRef.update({ isOnline: trueOrFalse });
     } catch (e) {
-      // console.log('e.message from updateUserStatus', e.message);
-      return null;
+      console.error('e.message from updateUserStatus', e.message);
+      // return null;
     }
   };
 
@@ -133,14 +120,8 @@ export default function useAuth() {
 
   const getUserDocument = async uid => {
     if (!uid) return null;
-
     try {
       const userDocument = await firestore.doc(`users/${uid}`).get();
-      // const userDocument = await firestore
-      //   .collection('users')
-      //   .doc(uid)
-      //   .get();
-
       return { uid, ...userDocument.data() };
     } catch (error) {
       console.error('Error fetching user', error.message);
@@ -153,36 +134,7 @@ export default function useAuth() {
       signin,
       login,
       logout,
-      tryToLoginCurrentUser,
-      updateUserStatus
+      tryToLoginCurrentUser
     }
   ];
 }
-
-// useEffect(() => {
-//   tryToLoginUser(auth, userToken)
-//     .then(() => history.push("/"))
-//     .catch(e => history.push("/auth"));
-// }, []);
-
-// useEffect(() => {
-//   try {
-//     tryToLoginUser().then(res => history.push("/"));
-//   } catch (e) {
-//     history.push("/auth");
-//   }
-// }, []);
-
-// const tryToLoginUser = auth =>
-//   new Promise((resolve, reject) => {
-//     setState(draft => {
-//       draft.auth.loadingUser = true;
-//     });
-//     if (userToken == "valid token") {
-//       loginSuccess();
-//       resolve();
-//     } else {
-//       loginFail();
-//       reject();
-//     }
-//   });

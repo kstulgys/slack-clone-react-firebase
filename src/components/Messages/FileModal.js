@@ -1,10 +1,22 @@
 import React, { useState } from 'react';
 import mime from 'mime-types';
 import { Modal, Input, Button, Icon, Label } from 'semantic-ui-react';
-import useMessage from '../../store/Message';
+import useChannel from '../../store/Channel';
 
 export default function FileModal() {
-  const [message, { uploadFile }] = useMessage();
+  const [
+    channel,
+    {
+      createChannel,
+      subscribeToChannels,
+      changeChannel,
+      sendMessage,
+      subscribeToMessages,
+      uploadFile,
+      subscribeToUsers,
+      setSearchResults
+    }
+  ] = useChannel();
 
   const [fileState, setFile] = useState({
     file: null,
@@ -26,7 +38,6 @@ export default function FileModal() {
 
   const sendFile = () => {
     const { file } = fileState;
-
     if (file !== null && isAuthorized(file.name)) {
       const metadata = { contentType: mime.lookup(file.name) };
       uploadFile(file, metadata);

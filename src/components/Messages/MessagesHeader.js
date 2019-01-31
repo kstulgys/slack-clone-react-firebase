@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Header, Segment, Input, Icon } from 'semantic-ui-react';
 import useChannel from '../../store/Channel';
-import useMessage from '../../store/Message';
 
 export default function MessagesHeader() {
-  const [channel] = useChannel();
-  const [message, { setSearchResults }] = useMessage();
+  // const [channel] = useChannel();
+  // const [message, { setSearchResults }] = useMessage();
+  const [channel, { setSearchResults }] = useChannel();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchLoader, setSearchLoader] = useState(false);
 
@@ -36,7 +36,7 @@ export default function MessagesHeader() {
             color="yellow"
           />
         </span>
-        <Header.Subheader>{message.uniqueUsers}</Header.Subheader>
+        <Header.Subheader>{channel.uniqueUsers}</Header.Subheader>
       </Header>
 
       {/* Channel Search Input */}

@@ -1,26 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Comment, Segment, Input, Progress } from 'semantic-ui-react';
 import Message from './Message';
-import useMessage from '../../store/Message';
 import useChannel from '../../store/Channel';
 
 export default function MessagesWindow() {
-  const [message, { sendMessage, subscribeToNewMessages }] = useMessage();
-  const [channel] = useChannel();
-  // console.log(message.searchResults);
+  // const scrollHeightRef = useRef(0);
+  const scrollToBottomRef = useRef(0);
+  const [channel, { subscribeToMessages }] = useChannel();
+
+  // const divHeight = scrollHeightRef.current.scrollHeight;
+  useEffect(() => {
+    scrollToBottomRef.current.scrollIntoView();
+  });
+
   useEffect(
     () => {
-      subscribeToNewMessages();
-      // return () => subscribeToNewMessages();
+      subscribeToMessages();
+      return subscribeToMessages();
     },
     [channel.currentChannel]
   );
-  console.log('message.messages', message.messages);
-  console.log('message.searchResults', message.searchResults);
 
   const displayMessages = messages => {
-    // console.log('in displayMessages with', messages);
-
     return (
       messages.length > 0 &&
       messages.map(message => (
@@ -36,13 +37,26 @@ export default function MessagesWindow() {
           height: `calc(100vh - 235px)`,
           overflowY: 'scroll'
         }}>
-        {message.searchResults.length > 0
-          ? displayMessages(message.searchResults)
-          : displayMessages(message.messages)}
-        {message.uploadingFile && (
-          <Progress percent={message.percentUploaded} indicating />
+        {channel.searchResults.length > 0
+          ? displayMessages(channel.searchResults)
+          : displayMessages(channel.messages)}
+        {channel.uploadingFile && (
+          <Progress percent={channel.percentUploaded} indicating />
         )}
+        <div ref={scrollToBottomRef} />
       </Comment.Group>
     </Segment>
   );
+  // <p
+  //   style={{
+  //     position: 'absolute',
+  //     // bottom: '1em',
+  //     marginLeft: 10,
+  //     left: 0,
+  //     bottom: 10
+  //     // right: '1em',
+  //     // zIndex: 200
+  //   }}>
+  //   someone is typing ...
+  // </p>
 }

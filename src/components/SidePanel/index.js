@@ -42,7 +42,9 @@ export default function SidePanel() {
     >
       <UserPanel />
       <Channels />
-      <DirectMessages />
+      {
+        // <DirectMessages />
+      }
 
       {/*<Starred  />*/}
     </Menu>

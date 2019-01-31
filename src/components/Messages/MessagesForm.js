@@ -5,10 +5,19 @@ import useMessage from '../../store/Message';
 import useChannel from '../../store/Channel';
 
 export default function MessagesForm() {
-  const [message, { sendMessage, subscribeToNewMessages }] = useMessage();
+  // const [message, { sendMessage, subscribeToNewMessages }] = useMessage();
   const [
     channel,
-    { createChannel, subscribeToChannels, changeChannel }
+    {
+      createChannel,
+      subscribeToChannels,
+      changeChannel,
+      sendMessage,
+      subscribeToMessages,
+      uploadFile,
+      subscribeToUsers,
+      setSearchResults
+    }
   ] = useChannel();
   const [content, setMessage] = useState('');
 
@@ -38,7 +47,7 @@ export default function MessagesForm() {
       style={{
         position: 'fixed ',
         bottom: '1em',
-        marginLeft: '320px ',
+        marginLeft: '335px ',
         left: 0,
         right: '1em',
         zIndex: 200

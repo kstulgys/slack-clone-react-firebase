@@ -20,8 +20,6 @@ export default function Chanels() {
     channelDetails: ''
   });
 
-  const [activeChannel, setActiveChannel] = useState({});
-
   // console.log(channel);
   // console.log(channel.currentChannel && channel.currentChannel.id);
 
@@ -37,6 +35,7 @@ export default function Chanels() {
 
   useEffect(() => {
     subscribeToChannels();
+    return subscribeToChannels();
   }, []);
 
   // console.log(channeInfo);

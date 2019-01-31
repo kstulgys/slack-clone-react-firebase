@@ -1,13 +1,40 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { distanceInWordsToNow } from 'date-fns';
-import { Comment, Image, Progress } from 'semantic-ui-react';
+import { Comment, Image, Progress, Loader } from 'semantic-ui-react';
 import useAuth from '../../store/Auth';
-import useMessage from '../../store/Message';
+import useChannel from '../../store/Channel';
 import isUrl from 'is-url';
 
+import { unstable_createResource as createResource } from 'react-cache';
+
+const imageResource = createResource(
+  src =>
+    new Promise(resolve => {
+      const image = new Image();
+      image.onload = () => resolve(src);
+      image.src = src;
+    })
+);
+
+function Img(props) {
+  return (
+    <Suspense
+      fallback={
+        <Loader
+        // type="Ball-Triangle"
+        // color="#00BFFF"
+        // height="90"
+        // width="60"
+        />
+      }>
+      <img {...props} src={imageResource.read(props.src)} />
+    </Suspense>
+  );
+}
+
 export default function Message(props) {
-  const [message] = useMessage();
   const [auth] = useAuth();
+
   const isOwnMessage =
     auth.currentUser.uid == props.user.id
       ? {
@@ -15,7 +42,6 @@ export default function Message(props) {
           paddingLeft: 8
         }
       : '';
-  // console.log(message.uploadingFile, message.percentUploaded);
 
   return (
     <Comment>
@@ -27,7 +53,11 @@ export default function Message(props) {
         </Comment.Metadata>
 
         {isUrl(props.message.content) ? (
-          <Image src={props.message.content} className="message__image" />
+          <Image
+            src={props.message.content}
+            className="message__image"
+            size="medium"
+          />
         ) : (
           <Comment.Text>{props.message.content}</Comment.Text>
         )}
@@ -35,3 +65,10 @@ export default function Message(props) {
     </Comment>
   );
 }
+
+//<Img src={props.message.content} />
+// <Image
+//   src={props.message.content}
+//   className="message__image"
+//   size="medium"
+// />
