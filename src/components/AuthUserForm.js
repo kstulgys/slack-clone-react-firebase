@@ -40,8 +40,8 @@ export default function AuthUserForm() {
         verticalAlign="middle"
         style={{ height: '80vh' }}>
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h1" icon color="violet" textAlign="center">
-            <Icon name="puzzle piece" color="violet" />
+          <Header as="h1" icon color="brown" textAlign="center">
+            <Icon name="puzzle piece" color="brown" />
             {isUser ? `Login for DevChat` : `Register for DevChat`}
           </Header>
           <Form onSubmit={handleSubmit} size="large">
@@ -97,13 +97,9 @@ export default function AuthUserForm() {
             <Button
               disabled={auth.isLoading}
               loading={auth.isLoading}
-              // className={loading ? "loading" : ""}
-              color="violet"
+              color="brown"
               fluid
-              size="large"
-
-              // onClick={login}
-            >
+              size="large">
               Submit
             </Button>
           </Form>
@@ -111,7 +107,7 @@ export default function AuthUserForm() {
 
           <Header
             as="a"
-            color="violet"
+            color="brown"
             size="small"
             onClick={() => setIsUser(!isUser)}
             content={isUser ? `Don't have an account yet?` : `Already a user?`}
