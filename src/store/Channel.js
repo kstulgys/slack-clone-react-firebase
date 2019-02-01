@@ -59,7 +59,7 @@ export default function useChannel() {
           id: doc.id,
           ...doc.data()
         }));
-        console.log(channels);
+        // console.log(channels);
         setState(draft => {
           draft.channel.channels = channels;
           draft.channel.currentChannel = channels[0];
@@ -161,6 +161,7 @@ export default function useChannel() {
   };
 
   const setSearchResults = searchTerm => {
+    // console.log(searchTerm);
     if (searchTerm === '') {
       setState(draft => {
         draft.channel.searchResults = [];
@@ -168,7 +169,10 @@ export default function useChannel() {
     } else {
       const regexp = new RegExp(searchTerm, 'gi');
       const res = channel.messages.reduce((acc, message) => {
-        if (message.content.match(regexp) || message.user.name.match(regexp)) {
+        if (
+          message.content.match(regexp) ||
+          message.user.displayName.match(regexp)
+        ) {
           acc.push(message);
         }
         return acc;

@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Segment, Input, Icon, Label } from 'semantic-ui-react';
+import { Button, Segment, Input, Popup, Label } from 'semantic-ui-react';
 import FileModal from './FileModal';
-import useMessage from '../../store/Message';
 import useChannel from '../../store/Channel';
 
 export default function MessagesForm() {
   // const [message, { sendMessage, subscribeToNewMessages }] = useMessage();
-  const [
-    channel,
-    {
-      createChannel,
-      subscribeToChannels,
-      changeChannel,
-      sendMessage,
-      subscribeToMessages,
-      uploadFile,
-      subscribeToUsers,
-      setSearchResults
-    }
-  ] = useChannel();
+  const [channel, { sendMessage }] = useChannel();
   const [content, setMessage] = useState('');
 
   const handleKeyDown = event => {

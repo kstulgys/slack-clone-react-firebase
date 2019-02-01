@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 // import useAuth from "../store/Auth";
 import {
   Dropdown,
@@ -9,29 +9,30 @@ import {
   Loader,
   Image,
   Icon
-} from "semantic-ui-react";
-import useAuth from "../../store/Auth";
+} from 'semantic-ui-react';
+import useAuth from '../../store/Auth';
 
 // import SidePanel from "./SidePanel";
 
 export default function UserPanel() {
   const [auth, { logout }] = useAuth();
   const dropdownOptions = [
+    // {
+    //   key: "user",
+    //   text: (
+    //     <span>
+    //       Signed in as <strong>User name</strong>
+    //     </span>
+    //   ),
+    //   disabled: true
+    // },
     {
-      key: "user",
-      text: (
-        <span>
-          Signed in as <strong>User name</strong>
-        </span>
-      ),
+      key: 'avatar',
+      text: <span>Change Avatar</span>,
       disabled: true
     },
     {
-      key: "avatar",
-      text: <span>Change Avatar</span>
-    },
-    {
-      key: "signout",
+      key: 'signout',
       text: <span onClick={logout}>Sign Out</span>
     }
   ];

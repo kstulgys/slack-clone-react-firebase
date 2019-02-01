@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Icon } from 'semantic-ui-react';
-import useMessage from '../../store/Message';
 import useChannel from '../../store/Channel';
 
 export default function DirectMessages() {
   const [channel, { createChannel, changeChannel }] = useChannel();
-  const [message, { sendMessage, subscribeToUsers }] = useMessage();
 
   // state = {
   //   activeChannel: "",
@@ -106,9 +104,9 @@ export default function DirectMessages() {
   // render() {
   //   const { users, activeChannel } = this.state;
 
-  useEffect(() => {
-    subscribeToUsers();
-  }, []);
+  // useEffect(() => {
+  //   subscribeToUsers();
+  // }, []);
 
   return (
     <Menu.Menu className="menu">

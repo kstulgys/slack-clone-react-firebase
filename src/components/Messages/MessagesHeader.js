@@ -3,8 +3,6 @@ import { Header, Segment, Input, Icon } from 'semantic-ui-react';
 import useChannel from '../../store/Channel';
 
 export default function MessagesHeader() {
-  // const [channel] = useChannel();
-  // const [message, { setSearchResults }] = useMessage();
   const [channel, { setSearchResults }] = useChannel();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchLoader, setSearchLoader] = useState(false);
@@ -13,7 +11,7 @@ export default function MessagesHeader() {
     setSearchLoader(true);
     setTimeout(() => {
       setSearchLoader(false);
-    }, 1000);
+    }, 500);
   };
 
   useEffect(
@@ -32,7 +30,7 @@ export default function MessagesHeader() {
           # {channel.currentChannel && channel.currentChannel.channelName}
           <Icon
             // onClick={handleStar}
-            name="star"
+            name="star outline"
             color="yellow"
           />
         </span>
